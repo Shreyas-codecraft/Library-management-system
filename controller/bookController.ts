@@ -1,24 +1,33 @@
-import { CustomRequest, HTTPServer, Middleware } from "./server"
-import { BookRepository } from "./book-management/book.repository";
 import { drizzle } from "drizzle-orm/mysql2";
 import mysql from "mysql2/promise";
-import { resolve } from "path/posix";
-import { IBook } from "./book-management/models/books.model";
+import { NextFunction, Request, Response, Router } from "express"; // Import types
+import { BookRepository } from "../book-management/book.repository";
+import { IBook } from "../book-management/models/books.model";
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
+const JWT_SECRET = "34rtfg6yhj8ik";
+const REFRESH_SECRET = "34rtfg6yhj8ik";
 
-const server = new HTTPServer(3000);
 const pool = mysql.createPool(
   "mysql://root:root_password@localhost:3306/librarydb"
 );
-
 const db = drizzle(pool);
 const bookRepository = new BookRepository(db);
 
-const handleAddBook: Middleware = async (request, response) => {
-  const book = await request.body;
+export const router = Router();
+
+export const handleAddBook = async (request: Request, response: Response) => {
+  const book = request.body;
   try {
+    if (request.role !== "admin") {
+      response
+        .status(403)
+        .json({ message: "Only admins add books" });
+      return;
+    }
     const createdBook = await bookRepository.create(book);
     if (createdBook) {
-      response.end(JSON.stringify({ message: "Book added successfully" }));
+        response.status(200).json({ message: "User not found" });
     } else {
       response.writeHead(404, { "Content-Type": "plain/text" });
       response.end("Book not found");
@@ -33,14 +42,16 @@ const handleAddBook: Middleware = async (request, response) => {
   }
 };
 
-const handleGetBookById: Middleware = async (request, response) => {
-  const baseUrl = `http://${request.headers.host}`;
-  const url = new URL(request.url ?? "", baseUrl);
-  const bookId = Number(url.searchParams.get("id"));
+export const handleGetBookById = async (
+  request: Request,
+  response: Response
+) => {
+  
+  const bookId = Number(request.params.id);
   try {
     const book = await bookRepository.getById(bookId);
     if (book) {
-      response.end(JSON.stringify(book));
+        response.status(200).json(book);
     } else {
       response.writeHead(404, { "Content-Type": "plain/text" });
       response.end("Book not found");
@@ -51,42 +62,38 @@ const handleGetBookById: Middleware = async (request, response) => {
   }
 };
 
-const handleListBooks: Middleware = async (request, response) => {
-  const baseUrl = `http://${request.headers.host}`;
-  const url = new URL(request.url ?? "", baseUrl);
-  const page = Number(url.searchParams.get("page"));
-  const search = url.searchParams.get("search") || undefined;
-  const limit = Number(url.searchParams.get("limit"));
-  const offset = (page - 1) * limit;
-  try {
-    const books = await bookRepository.list({
-      search: search,
-      limit: Number(limit),
-      offset: Number(offset),
-    });
-    if (books) {
-      response.end(JSON.stringify(books));
-    } else {
-      response.writeHead(404, { "Content-Type": "plain/text" });
-      response.end("Books not found");
+export const listHandler = async (req: Request, res: Response) => {
+    try {
+      const { limit, offset, search } = req.query;
+      console.log(req.query);
+      const pageRequest = {
+        limit: parseInt(limit as string, 10) || 10,
+        offset: parseInt(offset as string, 10) || 0,
+        search: (search as string) || "",
+      };
+      const usersList = await bookRepository.list(pageRequest);
+      res.json(usersList);
+    } catch (error) {
+      res.status(500).json({ message: "Server error", error });
     }
-  } catch (err) {
-    response.writeHead(500, { "Content-Type": "plain/text" });
-    response.end("Internal server error");
-  }
-};
+  };
 
-const handleDeleteBook: Middleware = async (request, response) => {
-  const baseUrl = `http://${request.headers.host}`;
-  const url = new URL(request.url ?? "", baseUrl);
-  const bookId = Number(url.searchParams.get("id"));
-
+export const handleDeleteBook = async (request: Request, response: Response) => {
+  
+  const bookId = Number(request.params.id);
+    console.log("======>")
   if (isNaN(bookId)) {
     response.writeHead(400, { "Content-Type": "plain/text" });
     response.end("Invalid book ID");
     return;
   }
   try {
+    if (request.role !== "admin") {
+        response
+          .status(403)
+          .json({ message: "Only admins delete books" });
+        return;
+      }
     const book = await bookRepository.getById(bookId);
     if (book) {
       await bookRepository.delete(bookId);
@@ -105,7 +112,7 @@ const handleDeleteBook: Middleware = async (request, response) => {
   }
 };
 
-const handleUpdateBook: Middleware = async (request, response) => {
+export const handleUpdateBook = async (request: Request, response: Response) => {
   const baseUrl = `http://${request.headers.host}`;
   const url = new URL(request.url ?? "", baseUrl);
   const bookId = Number(url.searchParams.get("id"));
@@ -117,6 +124,12 @@ const handleUpdateBook: Middleware = async (request, response) => {
   }
   const toBeUpdated = await request.body;
   try {
+    if (request.role !== "admin") {
+        response
+          .status(403)
+          .json({ message: "Only admins update books" });
+        return;
+      }
     console.log(toBeUpdated);
     const updatedBook = await bookRepository.update(bookId, toBeUpdated);
     if (updatedBook) {
@@ -136,10 +149,10 @@ const handleUpdateBook: Middleware = async (request, response) => {
   }
 };
 
-const validateBookDataMiddleware: Middleware = async (
-  request,
-  response,
-  next
+const validateBookDataMiddleware = async (
+  request: Request,
+  response: Response,
+  next: NextFunction
 ) => {
   if (request.method === "POST") {
     const body = await request.body;
@@ -162,48 +175,6 @@ const validateBookDataMiddleware: Middleware = async (
       response.end(JSON.stringify({ error: "Invalid JSON body" }));
       return;
     }
-  } 
+  }
   if (next) next();
 };
-
-server.patch("/books", handleUpdateBook);
-
-// server.delete("/books", handleDeleteBook);
-
-server.get("/books", handleGetBookById);
-
-server.get("/books", handleListBooks);
-
-server.post("/books", validateBookDataMiddleware, handleAddBook);
-
-server.use((request, response, next) => {
-  response.setHeader("Content-Type", "application/json");
-  response.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
-  if (next) next();
-});
-
-server.use(async (request: CustomRequest, response, next) => {
-  if (request.method === "POST" || request.method === "PATCH") {
-    request.body = new Promise((resolve, reject) => {
-      let bodyData = "";
-      request.on("data", (chunk) => {
-        bodyData += chunk.toString();
-      });
-
-      request.on("end", async () => {
-        try {
-          let json = JSON.parse(bodyData);
-          resolve(json);
-          if (next) next();
-        } catch (error) {
-          response.writeHead(400, { "Content-Type": "application/json" });
-          reject(new Error("No data found"));
-        }
-      });
-    });
-  } else {
-    if (next) next();
-}
-});
-const express = require('express');
-const router = express.Router();

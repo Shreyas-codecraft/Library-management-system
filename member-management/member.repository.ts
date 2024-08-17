@@ -9,7 +9,6 @@ import { CountResult } from "../core/ReturTypes";
 export class MemberRepository implements IRepository<IMemberBase, IMember> {
   constructor(private db: MySql2Database<Record<string, never>>) {}
   async create(data: IMemberBase): Promise<IMember | null> {
-    console.log(data)
     try {
       const [result] = await this.db
         .insert(Members)
@@ -17,7 +16,6 @@ export class MemberRepository implements IRepository<IMemberBase, IMember> {
           ...data,
         })
         .$returningId();
-        console.log("=====>")
       const [member]: IMember[] = await this.db
         .select()
         .from(Members)
@@ -68,6 +66,20 @@ export class MemberRepository implements IRepository<IMemberBase, IMember> {
       throw err;
     }
   }
+
+  async getByUserName(name:string){
+    try {
+      const [result]: IMember[] = await this.db
+        .select()
+        .from(Members)
+        .where(eq(Members.firstName, name));
+      return result;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  
 
   async getByEmail(email:string): Promise<IMember | null>{
     try {
