@@ -2,9 +2,11 @@ import { drizzle } from "drizzle-orm/mysql2";
 import mysql from "mysql2/promise";
 import { NextFunction, Request, Response, Router } from "express"; // Import types
 import { MemberRepository } from "../member-management/member.repository";
+import { Appenv } from "../read-env";
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
-const JWT_SECRET = "34rtfg6yhj8ik";
+const JWT_SECRET = Appenv.JWT_SECRET;
+const REFRESH_SECRET = Appenv.REFRESH_SECRET;
 
 const pool = mysql.createPool(
   "mysql://root:root_password@localhost:3306/librarydb"
@@ -26,7 +28,6 @@ export const verifyJWT = async (
           return res.status(403).json({ message: "Invalid token" });
         }
         req.id = decoded.id;
-        console.log("next function called")
         next();
       });
     } else {

@@ -1,6 +1,7 @@
-const express = require('express');
+import express from 'express';
 export const registerRouter = express.Router();
-// const authController = require('../controllers/authController');
 import { handleNewUser } from "../controller/registerController";
 registerRouter.post('/', handleNewUser);
+
+
 

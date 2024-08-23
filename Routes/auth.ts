@@ -1,6 +1,5 @@
-const express = require('express');
+import express from 'express';
 export const loginRouter = express.Router();
-// const authController = require('../controllers/authController');
 import { handleLogin } from "../controller/authController";
 
 loginRouter.post('/', handleLogin);

@@ -1,8 +1,6 @@
 import express from "express";
-const app = express();
-// const path = require('path');
+import cors from "cors";
 import cookieParser from "cookie-parser";
-const PORT = process.env.PORT || 3500;
 import { verifyJWT } from "./middleswares/verifyJWT";
 import { loginRouter } from "./Routes/auth";
 import { logoutRouter } from "./Routes/logout";
@@ -11,37 +9,40 @@ import { registerRouter } from "./Routes/register";
 import { memberRouter } from "./Routes/member";
 import { bookRouter } from "./Routes/books";
 import { ensureAdmin } from "./middleswares/ensureAdmin";
-// built-in middleware for json 
+// import { redirectToGoogle } from "./controller/redirectToGoogle";
+import { googleRouter } from "./Routes/googleOauth";
+import { AuthorizeRouter } from "./Routes/googleAuthorize";
+
+
+
+const app = express();
+const PORT = process.env.PORT || 3500;
+
+// CORS Configuration
+app.use(
+  cors({origin: 'http://localhost:5174',credentials:true})
+);
 
 app.use(express.json());
-
-//middleware for cookies
 app.use(cookieParser());
 
-//serve static files
+// Public Routes (No JWT verification)
+app.use("/register", registerRouter);
+app.use("/login", loginRouter);
+app.use("/refresh", refreshRouter);
+app.use("/logout", logoutRouter);
+app.use("/redirect",googleRouter);
+app.use("/authorize",AuthorizeRouter  );
 
-// routes
-app.use('/register', registerRouter);
-app.use('/login', loginRouter);
-app.use('/refresh', refreshRouter);
-app.use('/logout', logoutRouter);
-app.use(verifyJWT);  
-app.use(ensureAdmin)
-app.use("/books",bookRouter)
-app.use("/users",memberRouter)
 
-// app.use('/employees', require('./routes/api/employees'));
+// Apply JWT verification middleware to all routes below this line
+// app.use(verifyJWT);
 
-// app.all('*', (req, res) => {
-//     res.status(404);
-//     if (req.accepts('html')) {
-//         res.sendFile(path.join(__dirname, 'views', '404.html'));
-//     } else if (req.accepts('json')) {
-//         res.json({ "error": "404 Not Found" });
-//     } else {
-//         res.type('txt').send("404 Not Found");
-//     }
-// });
+// Protected Routes (Requires JWT and Admin)
+app.use("/books",verifyJWT, ensureAdmin, bookRouter);
+app.use("/users", verifyJWT,ensureAdmin, memberRouter);
 
+// Example Admin Route
+// app.use("/admin", ensureAdmin, adminRouter); // Uncomment and define your admin routes
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

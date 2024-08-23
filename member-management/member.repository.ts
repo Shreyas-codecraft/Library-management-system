@@ -28,7 +28,7 @@ export class MemberRepository implements IRepository<IMemberBase, IMember> {
 
   async update(id: number, data: IMemberBase): Promise<IMember | null> {
     const toBeUpdated = Object.fromEntries(
-      Object.entries(data).filter(([key, value]) => value !== undefined)
+      Object.entries(data).filter(([key, value]) => value !== undefined || value !== "")
     );
 
     try {
@@ -61,6 +61,17 @@ export class MemberRepository implements IRepository<IMemberBase, IMember> {
         .select()
         .from(Members)
         .where(eq(Members.id, id));
+      return result;
+    } catch (err) {
+      throw err;
+    }
+  }
+  async getByUserId(user_id: string): Promise<IMember | null> {
+    try {
+      const [result]: IMember[] = await this.db
+        .select()
+        .from(Members)
+        .where(eq(Members.user_id, user_id));
       return result;
     } catch (err) {
       throw err;

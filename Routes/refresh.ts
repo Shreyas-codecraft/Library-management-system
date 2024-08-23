@@ -1,6 +1,5 @@
-const express = require('express');
+import express from 'express';
 export const refreshRouter = express.Router();
-// const authController = require('../controllers/authController');
 import { handleRefreshToken } from "../controller/refreshController";
 refreshRouter.get('/', handleRefreshToken);
 

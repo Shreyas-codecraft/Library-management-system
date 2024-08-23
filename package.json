@@ -7,8 +7,6 @@
     "server": "tsx watch ./app.ts",
     "server1": "tsx watch ./member.express.server.ts",
     "mainServer": "tsx watch ./mainServer.ts"
-
-
   },
   "devDependencies": {
     "@eslint/eslintrc": "3.0.2",
@@ -16,7 +14,9 @@
     "@faker-js/faker": "8.4.1",
     "@types/bcrypt": "5.0.2",
     "@types/cookie-parser": "^1.4.7",
-    "@types/express": "4.17.21",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.6",
     "@types/node": "^20.14.9",
     "drizzle-kit": "0.23.0",
     "eslint": "8.57.0",
@@ -26,7 +26,7 @@
     "prettier": "3.3.2",
     "ts-node": "^10.9.2",
     "tsx": "^4.16.3",
-    "typescript": "5.5.2",
+    "typescript": "^5.5.2",
     "vitest": "1.6.0"
   },
   "dependencies": {
@@ -34,9 +34,10 @@
     "chalk": "4.1.2",
     "commander": "12.1.0",
     "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "drizzle-orm": "0.32.0",
-    "express": "4.19.2",
+    "express": "^4.19.2",
     "globals": "15.8.0",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "3.10.2",

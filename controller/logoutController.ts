@@ -3,6 +3,7 @@ import mysql from "mysql2/promise";
 import { NextFunction, Request, Response, Router } from "express"; // Import types
 import { MemberRepository } from "../member-management/member.repository";
 import { IMemberBase } from "../member-management/models/member.model";
+import { Appenv } from "../read-env";
 // import Request from ""
 require("dotenv").config();
 
@@ -19,11 +20,12 @@ export const handleLogout = async (req: Request, res: Response) => {
   const cookies = req.cookies;
 
   if (!cookies?.jwt) return res.status(200).json({ message: "User already logged out" });
-  const refreshToken = cookies.jwt;
+  const JWT_SECRET = Appenv.JWT_SECRET;
+const REFRESH_SECRET = Appenv.REFRESH_SECRET;
 
   // Is refreshToken in db?
   try {
-    const foundUser = await repo.getByRefreshToken(refreshToken);
+    const foundUser = await repo.getByRefreshToken(REFRESH_SECRET);
     if (!foundUser) {
       console.log("inside if");
 

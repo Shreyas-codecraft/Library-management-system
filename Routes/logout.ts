@@ -1,6 +1,5 @@
-const express = require('express');
+import express from 'express';
 export const logoutRouter = express.Router();
-// const authController = require('../controllers/authController');
 import { handleLogout } from "../controller/logoutController";
 logoutRouter.post('/', handleLogout);
 

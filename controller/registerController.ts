@@ -3,11 +3,13 @@ import mysql from "mysql2/promise";
 import { NextFunction, Request, Response, Router } from "express"; // Import types
 import bcrypt from "bcrypt";
 import { MemberRepository } from "../member-management/member.repository";
+import { Appenv } from "../read-env";
 // import Request from ""
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
-const JWT_SECRET = "34rtfg6yhj8ik";
-const REFRESH_SECRET = "34rtfg6yhj8ik";
+const JWT_SECRET = Appenv.JWT_SECRET;
+const REFRESH_SECRET = Appenv.REFRESH_SECRET;
+
 
 const pool = mysql.createPool(
   "mysql://root:root_password@localhost:3306/librarydb"

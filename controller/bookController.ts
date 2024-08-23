@@ -3,10 +3,11 @@ import mysql from "mysql2/promise";
 import { NextFunction, Request, Response, Router } from "express"; // Import types
 import { BookRepository } from "../book-management/book.repository";
 import { IBook } from "../book-management/models/books.model";
+import { Appenv } from "../read-env";
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
-const JWT_SECRET = "34rtfg6yhj8ik";
-const REFRESH_SECRET = "34rtfg6yhj8ik";
+const JWT_SECRET = Appenv.JWT_SECRET;
+const REFRESH_SECRET = Appenv.REFRESH_SECRET;
 
 const pool = mysql.createPool(
   "mysql://root:root_password@localhost:3306/librarydb"
@@ -67,7 +68,7 @@ export const listHandler = async (req: Request, res: Response) => {
       const { limit, offset, search } = req.query;
       console.log(req.query);
       const pageRequest = {
-        limit: parseInt(limit as string, 10) || 10,
+        limit: parseInt(limit as string, 10) || 100,
         offset: parseInt(offset as string, 10) || 0,
         search: (search as string) || "",
       };

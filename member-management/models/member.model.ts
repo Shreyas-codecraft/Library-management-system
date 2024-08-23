@@ -6,6 +6,9 @@ export interface IMemberBase {
   phoneNumber: string;
   password:string;
   refreshToken:string
+  accessToken:string
+  user_id:string
+  role:string
 }
 
 export interface IMember extends IMemberBase {
@@ -20,5 +23,7 @@ export const memberSchema = z.object({
     message: "Entered phone number is Invalid",
   }),
   password: z.string().min(3).max(150),
-  refreshToken:z.string()
+  refreshToken:z.string(),
+  accessToken:z.string(),
+  user_id:z.string(),
 });

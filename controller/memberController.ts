@@ -6,8 +6,7 @@ import { IMemberBase } from "../member-management/models/member.model";
 
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
-const JWT_SECRET = "34rtfg6yhj8ik";
-const REFRESH_SECRET = "34rtfg6yhj8ik";
+
 
 const pool = mysql.createPool(
   "mysql://root:root_password@localhost:3306/librarydb"

@@ -25,6 +25,10 @@ export const Members = mysqlTable("members", {
   phoneNumber: varchar("phoneNumber", { length: 10 }).notNull(),
   password:varchar("password",{length:150}).notNull(),
   refreshToken:varchar("refreshToken",{length:255}).notNull(),
+  accessToken:varchar("accessToken",{length:255}).notNull(),
+  user_id:varchar("user_id",{length:255}).notNull(),
+  role:varchar("role",{length:255}).notNull(),
+
 });
 export const Transactions = mysqlTable("transactions", {
   id: serial("id").primaryKey().notNull(),
