@@ -10,6 +10,7 @@ const db = drizzle(pool);
 const memberRepository = new MemberRepository(db);
 
 export const googleAuthorize = async (req: Request, res: Response) => {
+  console.log("=============> google auth")
   try {
     const code = req.query.code as string;
 
@@ -87,7 +88,7 @@ export const googleAuthorize = async (req: Request, res: Response) => {
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
 
-      res.redirect("http://localhost:5174/list");
+      res.redirect("http://localhost:5173/list");
     } else {
       await memberRepository.create({
         accessToken: newAccessToken,
@@ -101,7 +102,7 @@ export const googleAuthorize = async (req: Request, res: Response) => {
         user_id: decodedToken.sub,
       });
 
-      res.redirect("http://localhost:5174/");
+      res.redirect("http://localhost:5173/list");
     }
   } catch (error:any) {
     console.error("Error handling Google OAuth callback:", error);

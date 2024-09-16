@@ -1,6 +1,6 @@
 import { drizzle } from "drizzle-orm/mysql2";
 import mysql from "mysql2/promise";
-import { NextFunction, Request, Response, Router } from "express"; // Import types
+import { Request, Response, Router } from "express"; // Import types
 import bcrypt from "bcrypt";
 import { MemberRepository } from "../member-management/member.repository";
 import { IMemberBase } from "../member-management/models/member.model";
@@ -9,14 +9,12 @@ import { Appenv } from "../read-env";
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const JWT_SECRET = Appenv.JWT_SECRET;
-const REFRESH_SECRET = Appenv.REFRESH_SECRET;
 
 const pool = mysql.createPool(
-  "mysql://root:root_password@localhost:3306/librarydb"
+  Appenv.DATABASE_URL
 );
 const db = drizzle(pool);
 const repo = new MemberRepository(db);
-
 
 export const handleLogin = async (req: Request, res: Response) => {
   console.log("login");
@@ -28,10 +26,10 @@ export const handleLogin = async (req: Request, res: Response) => {
       .status(400)
       .json({ message: "Username and password are required." });
   }
-
   const foundUser = await repo.getByUserName(user);
   if (!foundUser) return res.sendStatus(401); //Unauthorized
   // evaluate password
+
   const match = await bcrypt.compare(pwd, foundUser.password);
   if (match) {
     // create JWTs

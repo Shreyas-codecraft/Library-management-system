@@ -3,6 +3,7 @@
     "start": "ts-node src/library.ts",
     "test": "vitest",
     "db:generate": "drizzle-kit generate mysql2",
+    "db:migrate": "drizzle-kit migrate mysql2",
     "dev": "tsx watch ./index.ts",
     "server": "tsx watch ./app.ts",
     "server1": "tsx watch ./member.express.server.ts",

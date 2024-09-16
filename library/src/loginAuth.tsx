@@ -1,8 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaGoogle } from 'react-icons/fa';
+import { FaBook, FaGoogle } from 'react-icons/fa';
 
-const LoginAuth: React.FC = () => {
+const LibraryHome: React.FC = () => {
   const navigate = useNavigate();
 
   const handleLogin = async () => {
@@ -22,36 +22,37 @@ const LoginAuth: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-100 via-purple-100 to-pink-100">
-      <div className="w-full max-w-lg p-8 bg-white shadow-lg rounded-xl overflow-hidden">
-        <h2 className="text-4xl font-bold text-center text-gray-800 mb-6">
-          Welcome Back!
-        </h2>
-        <p className="text-center text-gray-600 mb-8">
-          Please sign in to continue
-        </p>
+    <div className="bg-library-background flex items-center justify-center min-h-screen bg-cover bg-center">
+      <div className="w-full max-w-md p-8 bg-white shadow-lg rounded-xl overflow-hidden">
+        <div className="text-center mb-6">
+          <FaBook className="w-16 h-16 text-blue-600 mx-auto mb-4" />
+          <h2 className="text-3xl font-bold text-gray-800 mb-2">Library Management System</h2>
+          <p className="text-lg text-gray-600">Sign in to access your library account</p>
+        </div>
 
         <div className="space-y-4">
+          {/* Login with Google Button */}
           <button
             onClick={handleLogin}
-            className="w-full bg-gradient-to-r from-red-400 to-red-600 text-white py-3 px-4 rounded-lg flex items-center justify-center hover:opacity-90 transition duration-200 transform hover:scale-105"
+            className="w-full bg-white border border-gray-300 text-gray-700 font-semibold py-3 px-4 rounded-lg flex items-center justify-center shadow-sm hover:bg-gray-100 transition duration-200"
           >
-            <FaGoogle className="w-6 h-6 mr-2" />
-            Login with Google
+            <FaGoogle className="w-5 h-5 mr-2 text-blue-500" />
+            Continue with Google
           </button>
+          
           <div className="text-center text-gray-500">or</div>
+
+          {/* Register Button */}
           <button
             onClick={handleRegister}
-            className="w-full bg-gradient-to-r from-blue-400 to-blue-600 text-white py-3 px-4 rounded-lg hover:opacity-90 transition duration-200 transform hover:scale-105"
+            className="w-full bg-blue-600 text-white font-semibold py-3 px-4 rounded-lg flex items-center justify-center shadow-sm hover:bg-blue-700 transition duration-200"
           >
             Create an Account
           </button>
         </div>
-
-      
       </div>
     </div>
   );
 };
 
-export default LoginAuth;
+export default LibraryHome;

@@ -50,6 +50,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "./App.css";
 import Register from "./register";
 import LoginAuth from "./loginAuth";
+import SuccessPage from "./SuccessPage";
 
 // import FetchBooks from "./list";
 // import Login from "./login";
@@ -61,6 +62,8 @@ function App1() {
         <Route path="/" element={<LoginAuth />} />
         <Route path="/register" element={<Register />} />
         <Route path="/list" element={<FetchBooks />} />
+        <Route path="/success" element={<SuccessPage />} />
+
       </Routes>
     </Router>
   );

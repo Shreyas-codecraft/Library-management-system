@@ -20,14 +20,12 @@ export const handleLogout = async (req: Request, res: Response) => {
   const cookies = req.cookies;
 
   if (!cookies?.jwt) return res.status(200).json({ message: "User already logged out" });
-  const JWT_SECRET = Appenv.JWT_SECRET;
 const REFRESH_SECRET = Appenv.REFRESH_SECRET;
 
   // Is refreshToken in db?
   try {
     const foundUser = await repo.getByRefreshToken(REFRESH_SECRET);
     if (!foundUser) {
-      console.log("inside if");
 
       res.clearCookie("jwt", { httpOnly: true, secure:true,sameSite:'none' });
       if (!cookies?.jwt) return res.status(200).json({ message: "User already logged out" });
